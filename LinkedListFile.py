@@ -39,7 +39,6 @@ class LinkedList(Generic[T]):
     def is_empty(self):
         return self.start is None
 
-    @log_start_stop_method
     def add_to_end(self, item: T):
         """
         appends a node with the given value at the end of this list.
