@@ -12,7 +12,7 @@ class SparseArrays:
     def get_elements(self) -> Dict:
         elements = {}
         if self.mySparse.start is None:
-            return False
+            return elements
         else:
             p: LL_Node[T] = self.mySparse.start
             i = 0
@@ -22,8 +22,8 @@ class SparseArrays:
                 j = 0
                 while ll.__len__() > j:
                     col, let = q.get_value()
-                    # elements.update({(row,col):let})
-                    elements[(row,col)] = let
+                    elements.update({(row,col):let})
+                    #elements[(row,col)] = let
                     q = q.get_next()
                     j += 1
                 p = p.get_next()

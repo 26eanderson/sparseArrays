@@ -1,134 +1,83 @@
 import unittest
 import random
-import io
-import sys
-from sparseArray import SparseArrays  # Adjust import to match your file name
+from sparseArray import SparseArrays
 
-
-class TestSparseArraysPrintExamples(unittest.TestCase):
+class TestSparseArrayPrinting(unittest.TestCase):
 
     def setUp(self):
         """Create a fresh sparse array for each test"""
         self.sparse = SparseArrays()
-        # Redirect stdout to capture print output
-        self.held_output = io.StringIO()
-        self.original_stdout = sys.stdout
-        sys.stdout = self.held_output
 
-    def tearDown(self):
-        """Restore stdout after each test"""
-        sys.stdout = self.original_stdout
-        # Print a separator between tests
-        print("\n" + "=" * 50 + "\n")
+    def test_print_variations(self):
+        """Print various sparse array configurations"""
 
-    def test_print_examples(self):
-        """Print various examples of sparse arrays"""
-        examples = [
-            # Example 1: Empty array
-            [],
+        # Variation 1: Empty Array
+        print("\n--- Empty Array ---")
+        self.sparse.print()
 
-            # Example 2: Single element
-            [(1, 1, 'X')],
+        # Variation 2: Single Element
+        print("\n--- Single Element ---")
+        self.sparse = SparseArrays()
+        self.sparse.add_element(2, 3, 'X')
+        self.sparse.print()
 
-            # Example 3: Small grid with a few elements
-            [(0, 0, 'A'), (0, 2, 'B'), (2, 0, 'C'), (2, 2, 'D')],
+        # Variation 3: Row of Elements
+        print("\n--- Row of Elements ---")
+        self.sparse = SparseArrays()
+        for col in range(5):
+            self.sparse.add_element(1, col, chr(65 + col))
+        self.sparse.print()
 
-            # Example 4: Row pattern
-            [(1, 0, 'a'), (1, 1, 'b'), (1, 2, 'c'), (1, 3, 'd'), (1, 4, 'e')],
+        # Variation 4: Column of Elements
+        print("\n--- Column of Elements ---")
+        self.sparse = SparseArrays()
+        for row in range(5):
+            self.sparse.add_element(row, 2, chr(97 + row))
+        self.sparse.print()
 
-            # Example 5: Column pattern
-            [(0, 2, 'v'), (1, 2, 'w'), (2, 2, 'x'), (3, 2, 'y'), (4, 2, 'z')],
-
-            # Example 6: Diagonal pattern
-            [(0, 0, '1'), (1, 1, '2'), (2, 2, '3'), (3, 3, '4'), (4, 4, '5')],
-
-            # Example 7: Random scattered elements
-            [(0, 3, 'R'), (1, 5, 'A'), (2, 1, 'N'), (3, 4, 'D'), (4, 0, 'O'), (5, 2, 'M')],
-
-            # Example 8: Larger grid with more elements
-            [(i, j, chr(65 + i * 5 + j)) for i in range(5) for j in range(5) if (i + j) % 2 == 0],
-
-            # Example 9: Sparse representation of a word
-            [(0, 0, 'S'), (0, 1, 'P'), (0, 2, 'A'), (0, 3, 'R'), (0, 4, 'S'), (0, 5, 'E')]
-        ]
-
-        # Print each example
-        for i, example in enumerate(examples):
-            print(f"\nExample {i + 1}:")
-            print(f"Elements: {example}")
-
-            # Clear the sparse array
-            self.sparse = SparseArrays()
-
-            # Add elements to the sparse array
-            for row, col, val in example:
-                self.sparse.add_element(row, col, val)
-
-            # Print the sparse array
-            print("\nPrinted Sparse Array:")
-            self.sparse.print()
-
-            # Get the output
-            output = self.held_output.getvalue()
-            print(output)
-
-            # Reset the output buffer for the next example
-            self.held_output = io.StringIO()
-            sys.stdout = self.held_output
-
-    def test_print_random_examples(self):
-        """Print random examples of sparse arrays"""
-        random.seed(42)  # For reproducible results
-
-        # Generate several random examples
+        # Variation 5: Diagonal Elements
+        print("\n--- Diagonal Elements ---")
+        self.sparse = SparseArrays()
         for i in range(5):
-            # Generate random dimensions
-            max_row = random.randint(3, 8)
-            max_col = random.randint(3, 8)
+            self.sparse.add_element(i, i, str(i))
+        self.sparse.print()
 
-            # Generate random number of elements
-            density = random.uniform(0.1, 0.5)  # How filled the array is
-            num_elements = int(max_row * max_col * density)
+        # Variation 6: Scattered Elements
+        print("\n--- Scattered Elements ---")
+        self.sparse = SparseArrays()
+        scattered_elements = [
+            (0, 3, 'A'), (1, 1, 'B'),
+            (2, 4, 'C'), (3, 0, 'D'),
+            (4, 2, 'E')
+        ]
+        for row, col, val in scattered_elements:
+            self.sparse.add_element(row, col, val)
+        self.sparse.print()
 
-            # Generate random positions and letters
-            letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-            positions = set()
+        # Variation 7: Large Sparse Grid
+        print("\n--- Large Sparse Grid ---")
+        self.sparse = SparseArrays()
+        for _ in range(10):
+            row = random.randint(0, 9)
+            col = random.randint(0, 9)
+            val = chr(random.randint(65, 90))
+            self.sparse.add_element(row, col, val)
+        self.sparse.print()
 
-            while len(positions) < num_elements:
-                row = random.randint(0, max_row - 1)
-                col = random.randint(0, max_col - 1)
-                positions.add((row, col))
+        # Variation 8: Word Representation
+        print("\n--- Word Representation ---")
+        self.sparse = SparseArrays()
+        word = "SPARSE"
+        for i, letter in enumerate(word):
+            self.sparse.add_element(0, i, letter)
+        self.sparse.print()
 
-            # Create the example
-            example = []
-            for row, col in positions:
-                letter = random.choice(letters)
-                example.append((row, col, letter))
-
-            # Print the example
-            print(f"\nRandom Example {i + 1}:")
-            print(f"Dimensions: {max_row}x{max_col}, Elements: {len(example)}")
-            print(f"Elements: {example}")
-
-            # Clear the sparse array
-            self.sparse = SparseArrays()
-
-            # Add elements to the sparse array
-            for row, col, val in example:
-                self.sparse.add_element(row, col, val)
-
-            # Print the sparse array
-            print("\nPrinted Sparse Array:")
-            self.sparse.print()
-
-            # Get the output
-            output = self.held_output.getvalue()
-            print(output)
-
-            # Reset the output buffer for the next example
-            self.held_output = io.StringIO()
-            sys.stdout = self.held_output
-
+        # Variation 9: Overlapping Elements
+        print("\n--- Overlapping Elements ---")
+        self.sparse = SparseArrays()
+        self.sparse.add_element(2, 3, 'A')
+        self.sparse.add_element(2, 3, 'B')  # Should replace previous
+        self.sparse.print()
 
 if __name__ == '__main__':
     unittest.main()

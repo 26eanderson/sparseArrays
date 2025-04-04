@@ -1,7 +1,6 @@
 import unittest
 from sparseArray import SparseArrays  # Adjust import to match your file name
 
-
 class TestSparseArraysGetElements(unittest.TestCase):
 
     def setUp(self):
@@ -22,9 +21,10 @@ class TestSparseArraysGetElements(unittest.TestCase):
         elements = self.sparse.get_elements()
 
         # Verify result
-        self.assertIsInstance(elements, list, "Result should be a list")
+        self.assertIsInstance(elements, dict, "Result should be a dictionary")
         self.assertEqual(len(elements), 1, "Should have exactly one element")
-        self.assertEqual(elements[0], (3, 4, 'x'), "Element should be (3, 4, 'x')")
+        self.assertIn((3, 4), elements, "Position (3, 4) should exist in elements")
+        self.assertEqual(elements[(3, 4)], 'x', "Value at (3, 4) should be 'x'")
 
     def test_multiple_elements_same_row(self):
         """Test getting elements with multiple elements in the same row"""
@@ -40,9 +40,14 @@ class TestSparseArraysGetElements(unittest.TestCase):
         self.assertEqual(len(elements), 3, "Should have exactly three elements")
 
         # Check if all expected elements are in the result
-        expected_elements = [(5, 2, 'a'), (5, 7, 'b'), (5, 3, 'c')]
-        for element in expected_elements:
-            self.assertIn(element, elements, f"Element {element} should be in the result")
+        expected_elements = {
+            (5, 2): 'a',
+            (5, 7): 'b',
+            (5, 3): 'c'
+        }
+        for position, value in expected_elements.items():
+            self.assertIn(position, elements, f"Position {position} should exist")
+            self.assertEqual(elements[position], value, f"Value at {position} should be {value}")
 
     def test_multiple_elements_different_rows(self):
         """Test getting elements with elements in different rows"""
@@ -58,9 +63,14 @@ class TestSparseArraysGetElements(unittest.TestCase):
         self.assertEqual(len(elements), 3, "Should have exactly three elements")
 
         # Check if all expected elements are in the result
-        expected_elements = [(1, 1, 'p'), (3, 2, 'q'), (5, 3, 'r')]
-        for element in expected_elements:
-            self.assertIn(element, elements, f"Element {element} should be in the result")
+        expected_elements = {
+            (1, 1): 'p',
+            (3, 2): 'q',
+            (5, 3): 'r'
+        }
+        for position, value in expected_elements.items():
+            self.assertIn(position, elements, f"Position {position} should exist")
+            self.assertEqual(elements[position], value, f"Value at {position} should be {value}")
 
     def test_complex_sparse_array(self):
         """Test getting elements from a more complex sparse array"""
@@ -82,8 +92,9 @@ class TestSparseArraysGetElements(unittest.TestCase):
                          f"Should have exactly {len(test_data)} elements")
 
         # Check if all expected elements are in the result
-        for element in test_data:
-            self.assertIn(element, elements, f"Element {element} should be in the result")
+        for row, col, val in test_data:
+            self.assertIn((row, col), elements, f"Position ({row}, {col}) should exist")
+            self.assertEqual(elements[(row, col)], val, f"Value at ({row}, {col}) should be {val}")
 
     def test_updated_elements(self):
         """Test getting elements after updating some values"""
@@ -99,9 +110,10 @@ class TestSparseArraysGetElements(unittest.TestCase):
 
         # Verify result
         self.assertEqual(len(elements), 2, "Should have exactly two elements")
-        self.assertIn((2, 3, 'new1'), elements, "Updated element should have new value")
-        self.assertIn((4, 5, 'old2'), elements, "Unchanged element should remain the same")
-        self.assertNotIn((2, 3, 'old1'), elements, "Old value should not be present")
+        self.assertIn((2, 3), elements, "Position (2, 3) should exist")
+        self.assertEqual(elements[(2, 3)], 'new1', "Value at (2, 3) should be 'new1'")
+        self.assertIn((4, 5), elements, "Position (4, 5) should exist")
+        self.assertEqual(elements[(4, 5)], 'old2', "Value at (4, 5) should be 'old2'")
 
 
 if __name__ == '__main__':
