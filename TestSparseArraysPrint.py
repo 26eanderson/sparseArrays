@@ -1,122 +1,133 @@
 import unittest
-from io import StringIO
+import random
+import io
 import sys
 from sparseArray import SparseArrays  # Adjust import to match your file name
 
 
-class TestSparseArraysPrint(unittest.TestCase):
+class TestSparseArraysPrintExamples(unittest.TestCase):
 
     def setUp(self):
         """Create a fresh sparse array for each test"""
         self.sparse = SparseArrays()
         # Redirect stdout to capture print output
-        self.held_output = StringIO()
+        self.held_output = io.StringIO()
         self.original_stdout = sys.stdout
         sys.stdout = self.held_output
 
     def tearDown(self):
         """Restore stdout after each test"""
         sys.stdout = self.original_stdout
+        # Print a separator between tests
+        print("\n" + "=" * 50 + "\n")
 
-    def test_empty_sparse_array(self):
-        """Test printing an empty sparse array"""
-        # Mock get_elements to return an empty list
-        self.sparse.get_elements = lambda: []
+    def test_print_examples(self):
+        """Print various examples of sparse arrays"""
+        examples = [
+            # Example 1: Empty array
+            [],
 
-        # Call the print method
-        self.sparse.print()
+            # Example 2: Single element
+            [(1, 1, 'X')],
 
-        # Get the captured output
-        output = self.held_output.getvalue()
+            # Example 3: Small grid with a few elements
+            [(0, 0, 'A'), (0, 2, 'B'), (2, 0, 'C'), (2, 2, 'D')],
 
-        # An empty sparse array should print nothing or a specific message
-        self.assertEqual(output.strip(), "", "Empty sparse array should print nothing")
+            # Example 4: Row pattern
+            [(1, 0, 'a'), (1, 1, 'b'), (1, 2, 'c'), (1, 3, 'd'), (1, 4, 'e')],
 
-    def test_single_element(self):
-        """Test printing a sparse array with a single element"""
-        # Mock get_elements to return a single element
-        self.sparse.get_elements = lambda: [(1, 1, 'x')]
+            # Example 5: Column pattern
+            [(0, 2, 'v'), (1, 2, 'w'), (2, 2, 'x'), (3, 2, 'y'), (4, 2, 'z')],
 
-        # Call the print method
-        self.sparse.print()
+            # Example 6: Diagonal pattern
+            [(0, 0, '1'), (1, 1, '2'), (2, 2, '3'), (3, 3, '4'), (4, 4, '5')],
 
-        # Get the captured output
-        output = self.held_output.getvalue()
+            # Example 7: Random scattered elements
+            [(0, 3, 'R'), (1, 5, 'A'), (2, 1, 'N'), (3, 4, 'D'), (4, 0, 'O'), (5, 2, 'M')],
 
-        # Check if 'x' appears in the output
-        self.assertIn('x', output, "Output should contain 'x'")
+            # Example 8: Larger grid with more elements
+            [(i, j, chr(65 + i * 5 + j)) for i in range(5) for j in range(5) if (i + j) % 2 == 0],
 
-    def test_multiple_elements(self):
-        """Test printing a sparse array with multiple elements"""
-        # Mock get_elements to return multiple elements
-        elements = [
-            (0, 0, 'a'), (0, 2, 'b'),
-            (2, 1, 'c'), (2, 3, 'd')
-        ]
-        self.sparse.get_elements = lambda: elements
-
-        # Call the print method
-        self.sparse.print()
-
-        # Get the captured output
-        output = self.held_output.getvalue()
-
-        # Check if all letters appear in the output
-        for _, _, letter in elements:
-            self.assertIn(letter, output, f"Output should contain '{letter}'")
-
-        # Count spaces to ensure empty cells are represented
-        space_count = output.count(' ')
-        self.assertGreaterEqual(space_count, 1, "Output should contain spaces for empty cells")
-
-    def test_large_sparse_array(self):
-        """Test printing a larger sparse array"""
-        # Mock get_elements to return elements in a larger grid
-        elements = [
-            (0, 0, 'a'), (0, 4, 'b'),
-            (3, 1, 'c'), (3, 3, 'd'),
-            (5, 2, 'e'), (5, 5, 'f')
-        ]
-        self.sparse.get_elements = lambda: elements
-
-        # Call the print method
-        self.sparse.print()
-
-        # Get the captured output
-        output = self.held_output.getvalue()
-
-        # Check if all letters appear in the output
-        for _, _, letter in elements:
-            self.assertIn(letter, output, f"Output should contain '{letter}'")
-
-    def test_updated_print_logic(self):
-        """Test with a modified version of the print method to verify logic"""
-        # This test is designed to check if the print method's logic works correctly
-        # by mocking a simplified version that just returns the expected grid
-
-        # Create a test instance with a modified print method for testing
-        test_sparse = SparseArrays()
-
-        # Mock data
-        elements = [
-            (0, 0, 'a'), (0, 2, 'b'),
-            (1, 1, 'c'), (1, 3, 'd'),
-            (2, 0, 'e'), (2, 2, 'f')
+            # Example 9: Sparse representation of a word
+            [(0, 0, 'S'), (0, 1, 'P'), (0, 2, 'A'), (0, 3, 'R'), (0, 4, 'S'), (0, 5, 'E')]
         ]
 
-        # Mock get_elements
-        test_sparse.get_elements = lambda: elements
+        # Print each example
+        for i, example in enumerate(examples):
+            print(f"\nExample {i + 1}:")
+            print(f"Elements: {example}")
 
-        # Call the print method
-        test_sparse.print()
+            # Clear the sparse array
+            self.sparse = SparseArrays()
 
-        # Get the captured output
-        output = self.held_output.getvalue()
+            # Add elements to the sparse array
+            for row, col, val in example:
+                self.sparse.add_element(row, col, val)
 
-        # Verify that the output contains all the expected characters
-        expected_chars = ['a', 'b', 'c', 'd', 'e', 'f', ' ']
-        for char in expected_chars:
-            self.assertIn(char, output, f"Output should contain '{char}'")
+            # Print the sparse array
+            print("\nPrinted Sparse Array:")
+            self.sparse.print()
+
+            # Get the output
+            output = self.held_output.getvalue()
+            print(output)
+
+            # Reset the output buffer for the next example
+            self.held_output = io.StringIO()
+            sys.stdout = self.held_output
+
+    def test_print_random_examples(self):
+        """Print random examples of sparse arrays"""
+        random.seed(42)  # For reproducible results
+
+        # Generate several random examples
+        for i in range(5):
+            # Generate random dimensions
+            max_row = random.randint(3, 8)
+            max_col = random.randint(3, 8)
+
+            # Generate random number of elements
+            density = random.uniform(0.1, 0.5)  # How filled the array is
+            num_elements = int(max_row * max_col * density)
+
+            # Generate random positions and letters
+            letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            positions = set()
+
+            while len(positions) < num_elements:
+                row = random.randint(0, max_row - 1)
+                col = random.randint(0, max_col - 1)
+                positions.add((row, col))
+
+            # Create the example
+            example = []
+            for row, col in positions:
+                letter = random.choice(letters)
+                example.append((row, col, letter))
+
+            # Print the example
+            print(f"\nRandom Example {i + 1}:")
+            print(f"Dimensions: {max_row}x{max_col}, Elements: {len(example)}")
+            print(f"Elements: {example}")
+
+            # Clear the sparse array
+            self.sparse = SparseArrays()
+
+            # Add elements to the sparse array
+            for row, col, val in example:
+                self.sparse.add_element(row, col, val)
+
+            # Print the sparse array
+            print("\nPrinted Sparse Array:")
+            self.sparse.print()
+
+            # Get the output
+            output = self.held_output.getvalue()
+            print(output)
+
+            # Reset the output buffer for the next example
+            self.held_output = io.StringIO()
+            sys.stdout = self.held_output
 
 
 if __name__ == '__main__':

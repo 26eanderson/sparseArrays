@@ -1,5 +1,6 @@
 import random
-from typing import Generic, TypeVar, List, Optional
+from idlelib.debugger_r import DictProxy
+from typing import Generic, TypeVar, Dict, List, Optional
 T = TypeVar("T")
 from LinkedListFile import *
 class SparseArrays:
@@ -8,7 +9,7 @@ class SparseArrays:
     def __init__(self):
         self.mySparse = LinkedList()
 
-    def get_elements(self):
+    def get_elements(self) -> Dict:
         elements = {}
         if self.mySparse.start is None:
             return False
@@ -21,7 +22,8 @@ class SparseArrays:
                 j = 0
                 while ll.__len__() > j:
                     col, let = q.get_value()
-                    elements.update({(row,col):let})
+                    # elements.update({(row,col):let})
+                    elements[(row,col)] = let
                     q = q.get_next()
                     j += 1
                 p = p.get_next()
@@ -29,11 +31,12 @@ class SparseArrays:
         return elements
 
     def print(self):
-        elements = self.get_elements()
-
+        elements:Dict = self.get_elements()
+        print(f"{type(elements)=}")
+        print(f"{elements=}")
         maxrow = 0
         maxcol = 0
-        for (row, col) in elements.keys:
+        for (row, col) in elements.keys():
             if row > maxrow:
                 maxrow = row
             if col > maxcol:
